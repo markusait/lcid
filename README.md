@@ -11,3 +11,7 @@ More info to install at [this link](https://thoughtbot.com/blog/how-to-manage-yo
 To install use:
 
     pipenv install
+
+To run the progamm use:
+
+    pipenv run start
