@@ -1,4 +1,4 @@
-# This code is based on http://www.cs.unca.edu/~reiser/imaging/chaincode.html
+# This code is based on https://www.kaggle.com/mburger/freeman-chain-code-second-attempt/data
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import cv2
