@@ -15,3 +15,13 @@ To install use:
 To run the progamm use:
 
     pipenv run start
+
+
+To contribute as a collaborator:
+
+    git clone git@github.com:markusait/lcmd.git
+    git checkout -b <feature_branch_name>
+    git add .
+    git commit -m <commit_message>
+    # Creates a pull request
+    git push origin <feature_branch_name>
