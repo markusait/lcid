@@ -9,10 +9,10 @@ start = "python main.py"
 [dev-packages]
 
 [packages]
+opencv-python = "*"
 numpy = "*"
 pandas = "*"
 matplotlib = "*"
-cv2 = "*"
 
 [requires]
 python_version = "3.7"
