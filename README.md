@@ -10,16 +10,17 @@ More info to install at [this link](https://thoughtbot.com/blog/how-to-manage-yo
 
 To install use:
 
+    pipenv shell
     pipenv install
 
-To run the progamm use:
+To run the program use:
 
     pipenv run start
 
 
 To contribute as a collaborator:
 
-    git clone git@github.com:markusait/lcmd.git
+    git clone https://github.com/markusait/lcmd.git
     git checkout -b <feature_branch_name>
     git add .
     git commit -m <commit_message>
