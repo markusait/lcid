@@ -17,6 +17,9 @@ To run the program use:
 
     pipenv run start
 
+To run the Jupyter Notebook:
+
+    pipenv run jupyter notebook
 
 To contribute as a collaborator:
 
