@@ -15,11 +15,8 @@ To install use:
 
 To run the program use:
 
+    # This will start the Jupyter Notebook locally
     pipenv run start
-
-To run the Jupyter Notebook:
-
-    pipenv run jupyter notebook
 
 To contribute as a collaborator:
 
