@@ -1,4 +1,4 @@
-# LCMD
+# LCID
 
 This project analyses images of the human liver to diagnose cirrhosis disease.
 
