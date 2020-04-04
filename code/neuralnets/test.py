@@ -7,7 +7,7 @@ from neuralnets import mnist_loader, network, plot
 # This is how we define multiple networks for comparison
 networks = [
     {
-        'sizes': [784, 30, 10],
+        'sizes': [784, 30, 2, 10],
         'epochs': 2,
         'mini_batch_size': 10,
         'learning_rate': 2.0,

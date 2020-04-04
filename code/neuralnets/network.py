@@ -49,7 +49,7 @@ class Network(object):
         return a
 
     def SGD(self, training_data, epochs, mini_batch_size, eta,
-            test_data=None, start_shuffle_at=0):
+            test_data=None, should_print=True, mean=False):
         """Train the neural network using mini-batch stochastic
         gradient descent.  The ``training_data`` is a list of tuples
         ``(x, y)`` representing the training inputs and the desired
@@ -68,8 +68,7 @@ class Network(object):
         classification_rates = []
         for j in range(epochs):
             # Making sure first round is the same
-            if j >= start_shuffle_at:
-                random.shuffle(training_data)
+            random.shuffle(training_data)
             mini_batches = [
                 training_data[k:k+mini_batch_size]
                 for k in range(0, n, mini_batch_size)]
@@ -77,10 +76,14 @@ class Network(object):
                 self.update_mini_batch(mini_batch, eta)
             if test_data:
                 classification_rates.append(self.evaluate(test_data) / n_test)
-                print(f"Epoch {j} : {self.evaluate(test_data)} / {n_test}")
+                if should_print:
+                    print(f"Epoch {j} : {self.evaluate(test_data)} / {n_test}")
             else:
                 print(f"Epoch {j} complete")
+        if mean:
+            return np.mean(classification_rates)
         return classification_rates
+
 
     def update_mini_batch(self, mini_batch, eta):
         """Update the network's weights and biases by applying
@@ -91,6 +94,7 @@ class Network(object):
         nabla_w = [np.zeros(w.shape) for w in self.weights]
         for x, y in mini_batch:
             delta_nabla_b, delta_nabla_w = self.backprop(x, y)
+            # Summing up all the delta w b
             nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
         self.weights = [w-(eta/len(mini_batch))*nw
@@ -103,8 +107,6 @@ class Network(object):
         gradient for the cost function C_x.  ``nabla_b`` and
         ``nabla_w`` are layer-by-layer lists of numpy arrays, similar
         to ``self.biases`` and ``self.weights``."""
-        # print("x",x,"y",y)
-        # raise Exception("xx")
         nabla_b = [np.zeros(b.shape) for b in self.biases]
         nabla_w = [np.zeros(w.shape) for w in self.weights]
         # feedforward
@@ -117,8 +119,8 @@ class Network(object):
             activation = sigmoid(z)
             activations.append(activation)
         # backward pass
-        delta = self.cost_derivative(activations[-1], y) * \
-            sigmoid_prime(zs[-1])
+        delta = self.cost_derivative(
+            activations[-1], y) * sigmoid_prime(zs[-1])
         nabla_b[-1] = delta
         nabla_w[-1] = np.dot(delta, activations[-2].transpose())
         # Note that the variable l in the loop below is used a little
