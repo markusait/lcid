@@ -592,6 +592,7 @@
             ],
             "version": "==1.1.1"
         },
+<<<<<<< HEAD
         "pyyaml": {
             "hashes": [
                 "sha256:06a0d7ba600ce0b2d2fe2e78453a470b5a6e000a985dd4a4e54e436cc36b0e97",
@@ -608,6 +609,8 @@
             ],
             "version": "==5.3.1"
         },
+=======
+>>>>>>> simplify and combine threshold with canny
         "pyzmq": {
             "hashes": [
                 "sha256:0bbc1728fe4314b4ca46249c33873a390559edac7c217ec7001b5e0c34a8fb7f",
