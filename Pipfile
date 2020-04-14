@@ -19,6 +19,8 @@ scipy = "*"
 scikit-image = "*"
 jupyter-contrib-nbextensions = "*"
 autopep8 = "*"
+torch = "*"
+torchvision = "*"
 
 [requires]
 python_version = "3.7"
