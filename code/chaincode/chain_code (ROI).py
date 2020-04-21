@@ -70,41 +70,41 @@ def draw_chain (canvas_y, canvas_x, starty, startx, code, line):
         startx=x        
     return canvas
 
-#def draw_roi(event,x,y,flags,param):
-#    global ix,iy,roi, img_test, img_start,buffer
-#    if event == cv2.EVENT_LBUTTONDOWN:
-#        img_test=img_start[y:y+120,x:x+180]
-#        roi=1        
-#    elif event == cv2.EVENT_MOUSEMOVE:
-#        if y+120 < h_img and x+180 < w_img:
-#            cv2.rectangle(img_start,(x,y),(x+180,y+120), (0,255,0),2)
-#            cv2.circle(img_start,(x+90,y+60),20,(0,255,255),2)
-#            cv2.line(img_start,(x+90,y+30),(x+90,y+90),(0,255,0),2)
-#            cv2.line(img_start,(x+60,y+60),(x+120,y+60),(0,255,0),2)
-#            cv2.imshow(windowName,img_start)
-#            img_start=np.copy(img)
-#          
+def draw_roi(event,x,y,flags,param):
+    global ix,iy,roi, img_test, img_start,buffer
+    if event == cv2.EVENT_LBUTTONDOWN:
+        img_test=img_start[y:y+120,x:x+180]
+        roi=1        
+    elif event == cv2.EVENT_MOUSEMOVE:
+        if y+120 < h_img and x+180 < w_img:
+            cv2.rectangle(img_start,(x,y),(x+180,y+120), (0,255,0),2)
+            cv2.circle(img_start,(x+90,y+60),20,(0,255,255),2)
+            cv2.line(img_start,(x+90,y+30),(x+90,y+90),(0,255,0),2)
+            cv2.line(img_start,(x+60,y+60),(x+120,y+60),(0,255,0),2)
+            cv2.imshow(windowName,img_start)
+            img_start=np.copy(img)
+          
 # get the "region of Interest" (ROI)" by draw_roi()
 # it is necessary to left-click first, followed by pressing a key on keyboard
 # function has to be rewritten, because of insufficent method of moving the box 
 
-#windowName="Sonobild"
+windowName="Sonobild"
 img = cv2.imread("BN-1.bmp",0)
-#img_start = cv2.imread("BN-1.bmp",0)
+img_start = cv2.imread("BN-1.bmp",0)
 
-#h_img, w_img=img_start.shape
-h_img, w_img=(0,200)
-array_img=img[h_img:h_img+120,w_img:w_img+180]
+h_img, w_img=img_start.shape
+#h_img, w_img=(0,200)
+#array_img=img[h_img:h_img+120,w_img:w_img+180]
 
-#roi=0
-#cv2.namedWindow(windowName)
-#cv2.imshow(windowName, img_start)
-#cv2.setMouseCallback(windowName, draw_roi)
-#cv2.imshow(windowName, img_start)
-#while roi==0:
-#    cv2.waitKey(0)
-#cv2.destroyAllWindows()
-#array_img=img_test
+roi=0
+cv2.namedWindow(windowName)
+cv2.imshow(windowName, img_start)
+cv2.setMouseCallback(windowName, draw_roi)
+cv2.imshow(windowName, img_start)
+while roi==0:
+    cv2.waitKey(0)
+cv2.destroyAllWindows()
+array_img=img_test
 
 cv2.namedWindow("ROI")
 cv2.moveWindow("ROI",0,0)
