@@ -21,6 +21,7 @@ jupyter-contrib-nbextensions = "*"
 autopep8 = "*"
 torch = "*"
 torchvision = "*"
+opencv = "*"
 
 [requires]
 python_version = "3.7"
