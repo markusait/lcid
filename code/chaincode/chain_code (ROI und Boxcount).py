@@ -1,13 +1,16 @@
 import cv2
 import numpy as np
+import nolds
 import sys
 
 sys.setrecursionlimit(100000)
 
 def region_grow (i,j,g_min,g_max,dir): 
+    global rt
     if array_img[i,j]>g_min and array_img[i,j]<g_max and labelled[i,j]==0:
         direction.append(dir)
         labelled [i,j]=1
+        rt=rt+roughness(direction[-2],direction[-1])
         if j<width_img-1 and j>1 and i<hight_img-1 and i>1:
             region_grow(i-1,j,g_min,g_max,1)
             region_grow(i,j+1,g_min,g_max,3)
@@ -17,8 +20,20 @@ def region_grow (i,j,g_min,g_max,dir):
             region_grow(i-1,j-1,g_min,g_max,8)
             region_grow(i+1,j-1,g_min,g_max,6)
             region_grow(i-1,j+1,g_min,g_max,2)
-                                       
+
+def roughness (a,b):
+    r=np.array([[0.0,0.5,1.0,1.5,0.0,1.5,1.0,0.5],
+    [0.5,0.0,0.5,1.0,1.5,0.0,1.5,1.0],
+    [1.0,0.5,0.0,0.5,1.0,1.5,0.0,1.5],
+    [1.5,1.0,0.5,0.0,0.5,1.0,1.5,0.0],
+    [0.0,1.5,1.0,0.5,0.0,0.5,1.0,1.5],
+    [1.5,0.0,1.5,1.0,0.5,0.0,0.5,1.0],
+    [1.0,1.5,0.0,1.5,1.0,0.5,0.0,0.5],
+    [0.5,1.0,1.5,0.0,1.5,1.0,0.5,0.0]])
+    return r[a-1,b-1]
+               
 def chain (image): 
+    global rough
     image [image == 255] = 1
     h_img,w_img=image.shape
     chain_array=np.array([8,1,2,7,0,3,6,5,4])
@@ -44,6 +59,7 @@ def chain (image):
     # getting chain code from labelled (region_grow) and smoothed (CV2.findContours) image
     sumarray_max=np.amax(image_chain[spy-1:spy+2, spx-1:spx+2])
     chain_list=np.array([h_img,w_img,spy,spx,0])
+    rough=0
     while np.sum(image_chain) > 0 and sumarray_max > 0:
         image_chain[spy,spx]=0
         b=np.argmax(image_chain[spy-1:spy+2, spx-1:spx+2])
@@ -54,57 +70,77 @@ def chain (image):
         y3,x3=chain_dir2[b]   
         image_chain[spy+y2,spx+x2]=0
         image_chain[spy+y3,spx+x3]=0
+        rough=rough+(roughness(chain_list[-2],chain_list[-1]))
         spx=spx+x1
         spy=spy+y1
+        
     return chain_list
 
 def draw_chain (canvas_y, canvas_x, starty, startx, code, line):
     chain_dir=np.array ([(0,0),(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1)])
-    canvas=np.zeros(shape=[canvas_y, canvas_x, 3], dtype=np.uint8)
+    canvas=np.zeros(shape=[canvas_y, canvas_x, 1], dtype=np.uint8)
     for i in code[2:]:
         y,x=chain_dir[i]
         y=y+starty
         x=x+startx
-        canvas=cv2.line(canvas,(startx,starty),(x,y),(0,255,0),1)
+        #canvas=cv2.line(canvas,(startx,starty),(x,y),(0,255,0),1)
+        canvas=cv2.line(canvas,(startx,starty),(x,y),255,1)
         starty=y
         startx=x        
     return canvas
 
-#def draw_roi(event,x,y,flags,param):
-#    global ix,iy,roi, img_test, img_start,buffer
-#    if event == cv2.EVENT_LBUTTONDOWN:
-#        img_test=img_start[y:y+120,x:x+180]
-#        roi=1        
-#    elif event == cv2.EVENT_MOUSEMOVE:
-#        if y+120 < h_img and x+180 < w_img:
-#            cv2.rectangle(img_start,(x,y),(x+180,y+120), (0,255,0),2)
-#            cv2.circle(img_start,(x+90,y+60),20,(0,255,255),2)
-#            cv2.line(img_start,(x+90,y+30),(x+90,y+90),(0,255,0),2)
-#            cv2.line(img_start,(x+60,y+60),(x+120,y+60),(0,255,0),2)
-#            cv2.imshow(windowName,img_start)
-#            img_start=np.copy(img)
-#          
-# get the "region of Interest" (ROI)" by draw_roi()
-# it is necessary to left-click first, followed by pressing a key on keyboard
-# function has to be rewritten, because of insufficent method of moving the box 
+def draw_roi(event,x,y,flags,param):
+    global ix,iy,roi, img_test, img_start,buffer
+    if event == cv2.EVENT_LBUTTONDOWN:
+        img_test=img_start[y:y+120,x:x+180]
+        roi=1        
+    elif event == cv2.EVENT_MOUSEMOVE:
+        if y+120 < h_img and x+180 < w_img:
+            cv2.rectangle(img_start,(x,y),(x+180,y+120), (0,255,0),2)
+            cv2.circle(img_start,(x+90,y+60),20,(0,255,255),2)
+            cv2.line(img_start,(x+90,y+30),(x+90,y+90),(0,255,0),2)
+            cv2.line(img_start,(x+60,y+60),(x+120,y+60),(0,255,0),2)
+            cv2.imshow(windowName,img_start)
+            img_start=np.copy(img)
 
-#windowName="Sonobild"
+def boxcount (box_image):
+    pixels=[]
+    for i in range(box_image.shape[0]):
+        for j in range(box_image.shape[1]):
+            if box_image[i,j]>0:
+                pixels.append((i,j))
+    Lx=box_image.shape[1]
+    Ly=box_image.shape[0]
+    pixels=np.array(pixels)
+    scales=np.logspace(0.01, 1, num=10, endpoint=False, base=2)
+    Ns=[]
+    for scale in scales:
+        H, edges=np.histogramdd(pixels, bins=(np.arange(0,Lx,scale),np.arange(0,Ly,scale)))
+        Ns.append(np.sum(H>0))    
+    coeffs=np.polyfit(np.log(scales), np.log(Ns), 1)
+    fract_dim=-coeffs[0]
+    return fract_dim
+
+
+
+# Main Program 
+
+windowName="Sonobild"
 img = cv2.imread("BN-1.bmp",0)
-#img_start = cv2.imread("BN-1.bmp",0)
+img_start = cv2.imread("BN-1.bmp",0)
 
-#h_img, w_img=img_start.shape
-h_img, w_img=(0,200)
-array_img=img[h_img:h_img+120,w_img:w_img+180]
-
-#roi=0
-#cv2.namedWindow(windowName)
-#cv2.imshow(windowName, img_start)
-#cv2.setMouseCallback(windowName, draw_roi)
-#cv2.imshow(windowName, img_start)
-#while roi==0:
-#    cv2.waitKey(0)
-#cv2.destroyAllWindows()
-#array_img=img_test
+h_img, w_img=img_start.shape
+roi=0
+rough=0
+rt=0
+cv2.namedWindow(windowName)
+cv2.imshow(windowName, img_start)
+cv2.setMouseCallback(windowName, draw_roi)
+cv2.imshow(windowName, img_start)
+while roi==0:
+    cv2.waitKey(0)
+cv2.destroyAllWindows()
+array_img=img_test
 
 cv2.namedWindow("ROI")
 cv2.moveWindow("ROI",0,0)
@@ -166,6 +202,21 @@ cv2.imshow ("chain_code",surface_chain)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-# Print chain code of surface from chain () and tissue from region_grow ()
 print ("chain code of surface: ",chain_code)
 print ("chain code of tissue: ", direction)
+print()
+print ("chain code of surface (length): ",len (chain_code))
+print ("chain code of tissue (length): ", len(direction))
+print()
+box_surf=boxcount(surface_chain)
+print ("Hausdorff-Dimension (Surface): ",box_surf)
+box_tissue=boxcount(labelled)
+print ("Hausdorff-Dimension (Tissue): ",box_tissue)
+print()
+corr_surface=nolds.corr_dim(chain_code,2)
+print ("Correllation dimension (Surface): ",corr_surface)
+#corr_tissue=nolds.corr_dim(direction,2)
+#print ("Correllation dimension (Tissue): ",corr_tissue)
+print()
+print ("Roughness (Surface): ",rough/len(chain_code))
+print ("Roughness (Tissue) : ",rt/len(direction))
