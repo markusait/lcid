@@ -10,7 +10,6 @@ start = "jupyter notebook"
 pylint = "*"
 
 [packages]
-opencv-python = "*"
 numpy = "*"
 pandas = "*"
 matplotlib = "*"
@@ -21,6 +20,7 @@ jupyter-contrib-nbextensions = "*"
 autopep8 = "*"
 torch = "*"
 torchvision = "*"
+opencv-python = "==3.4.8.29"
 
 [requires]
 python_version = "3.7"
